@@ -105,11 +105,11 @@ def main(args):
     _logger.info("Script ends here")
 
 
-def run():
+def cli():
     """Entry point for console_scripts
     """
     main(sys.argv[1:])
 
 
 if __name__ == "__main__":
-    run()
+    cli()
