@@ -1,0 +1,7 @@
+# This is a sample configuration file The syntax is TOML
+# (https://github.com/toml-lang/toml/wiki)
+
+conn_uri = 'postgres://testuser:testpassword@localhost/csv_db'
+file_path = '~/data/mylargecsv.csv'
+use_uvloop = false
+log_level = 'INFO'

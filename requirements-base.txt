@@ -1,4 +1,9 @@
 pre-commit
+setuptools>=30.3.0
+setuptools_scm
 click
 asyncpg
 aiofile
+toml
+uvloop
+dacite

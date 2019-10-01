@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 from pkg_resources import get_distribution, DistributionNotFound
 
+__author__ = "Alexandre Gravier"
+__copyright__ = "Alexandre Gravier"
+__license__ = "GPLv3"
 try:
     # Change here if project is renamed and does not equal the package name
     dist_name = __name__
