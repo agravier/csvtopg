@@ -1,0 +1,16 @@
+graft docs
+graft src
+graft tests
+
+include .coveragerc
+include .isort.cfg
+
+include *.txt
+include *.rst
+include *.toml
+include LICENSE
+include MANIFEST.in
+
+include tox.ini .travis.yml
+
+global-exclude *.py[cod] __pycache__/* *.so *.dylib

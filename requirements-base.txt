@@ -1,4 +1,3 @@
-pre-commit
 setuptools>=30.3.0
 setuptools_scm
 click
@@ -7,3 +6,15 @@ aiofile
 toml
 uvloop
 dacite
+pytest
+pytest-cov
+pytest-xdist
+twine
+sphinxcontrib-spelling
+pyenchant
+docutils
+check-manifest
+flake8
+readme-renderer
+pygments
+isort
