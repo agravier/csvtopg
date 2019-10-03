@@ -63,15 +63,17 @@ class AsyncReader:
             num_fields = len(result)
             if self.expected_num_fields == -1:
                 self.expected_num_fields = num_fields
-            elif num_fields != self.expected_num_fields:
-                message = (f'Incorrect record length at line {self.line_num} '
-                           f'(expected {self.expected_num_fields}, found '
-                           f'{num_fields})')
-                if self.on_wrong_length is OnError.exception:
-                    raise AsyncReaderError(message)
-                elif self.on_wrong_length is OnError.skip_and_warn:
-                    warnings.warn(message)
-                return self.__anext__()
+            else:
+                while num_fields != self.expected_num_fields:
+                    message = (f'Incorrect record length at line {self.line_num} '
+                               f'(expected {self.expected_num_fields}, found '
+                               f'{num_fields})')
+                    if self.on_wrong_length is OnError.exception:
+                        raise AsyncReaderError(message)
+                    elif self.on_wrong_length is OnError.skip_and_warn:
+                        warnings.warn(message)
+                    result = await self._next_row_no_verify()
+                    num_fields = len(result)
         return result
 
     async def _next_row_no_verify(self):
