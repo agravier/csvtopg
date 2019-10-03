@@ -1,4 +1,5 @@
 import asyncio
+import bisect
 import csv
 import logging
 import re
@@ -7,6 +8,7 @@ import traceback
 from asyncio import Future
 from collections import deque
 from dataclasses import dataclass, field
+from statistics import median
 from typing import List, Optional, Tuple
 
 import aiofile
@@ -17,6 +19,7 @@ from csvtopg.configuration import Config
 log = logging.getLogger(__name__)
 
 MAX_QUEUE_SIZE = 1000
+DESIRED_BATCH_INSERT_SIZE = 500
 EOS = object()  # end of stream nonce
 STATUS_STRING_PATTERN = re.compile(r'COPY\s+(?P<num_rows>\d+)\s*$')
 
@@ -138,12 +141,15 @@ class CSVToPg:
             return 0
         log.debug('[stream_to_postgres] Connected to %s', self.config.conn_uri)
         num_rows_written = 0
+        num_recs_to_sleep_times = []
+        sleep_time = 2.
         try:
             await conn.execute(f'''
                 CREATE TABLE IF NOT EXISTS {self.config.table_name} (
                     {self.schema})''')
             eos = False
             while not eos:
+                await asyncio.sleep(sleep_time)
                 records = deque([await q.get()])
                 while not q.empty():
                     record = await q.get()
@@ -151,6 +157,44 @@ class CSVToPg:
                 if records[-1] is EOS:
                     eos = True
                     records.pop()
+                if records and num_rows_written > 0:
+                    num_recs = len(records)
+                    print(sleep_time, num_recs)
+                    i = bisect.bisect_left(num_recs_to_sleep_times, (num_recs,))
+                    if (len(num_recs_to_sleep_times) <= i or
+                            num_recs_to_sleep_times[i][0] > num_recs):
+                        num_recs_to_sleep_times.insert(
+                            i, (num_recs, [sleep_time]))
+                    else:
+                        num_recs_to_sleep_times[i][1].append(sleep_time)
+                    if num_recs < DESIRED_BATCH_INSERT_SIZE:
+                        lo = i
+                        hi = len(num_recs_to_sleep_times)
+                    else:
+                        lo = 0
+                        hi = i+1
+                    i = bisect.bisect_left(
+                        num_recs_to_sleep_times, (DESIRED_BATCH_INSERT_SIZE,),
+                        lo=lo, hi=hi)
+                    if len(num_recs_to_sleep_times) <= i:
+                        sleep_time *= 1.5
+                    elif i == 0:
+                        if (num_recs_to_sleep_times[i][0] ==
+                                DESIRED_BATCH_INSERT_SIZE):
+                            sleep_time = median(num_recs_to_sleep_times[i][1])
+                        else:
+                            sleep_time = median(num_recs_to_sleep_times[i][1])/2
+                    else:
+                        m_less = median(num_recs_to_sleep_times[i - 1][1])
+                        m_more = median(num_recs_to_sleep_times[i][1])
+                        mid_sleep_time = (m_less + m_more) / 2
+                        if mid_sleep_time <= sleep_time and \
+                            num_recs <= num_recs_to_sleep_times[i - 1][0]:
+                            sleep_time = m_more
+                            num_recs_to_sleep_times = num_recs_to_sleep_times[:i]
+                        else:
+                            sleep_time = mid_sleep_time
+                    print(f'{num_recs_to_sleep_times} → {sleep_time}')
                 if records:
                     status = await conn.copy_records_to_table(
                         self.config.table_name, records=records)
