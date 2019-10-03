@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from pkg_resources import get_distribution, DistributionNotFound
+from pkg_resources import DistributionNotFound, get_distribution
 
 __author__ = "Alexandre Gravier"
 __copyright__ = "Alexandre Gravier"

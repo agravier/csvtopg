@@ -30,6 +30,21 @@ core application is more easily done within pytest without having to capture
 the standard input and output, and independently from the particularities of
 any UI.
 
+Setting up a local Postgres instance
+====================================
+
+This is useful to local development and trying things out in general::
+
+    docker run --name csvtopg-test-postgres \
+        -v csvtopg-test-data:/var/lib/postgresql/data \
+        -p 5432:5432 \
+        -e POSTGRES_USER=csvtopg \
+        -e POSTGRES_PASSWORD='fq5WYLL!' \
+        -e POSTGRES_DB=csvtopg \
+        -d postgres:latest
+
+Don't reuse these credentials for any other purpose.
+
 Testing
 =======
 
@@ -73,7 +88,14 @@ This should result in an updated requirements.txt::
     pip install -r requirements-base.txt &&
     pip freeze > requirements.txt &&
     pyenv deactivate &&
-    pyenv uninstall csvtopg-clean
+    pyenv uninstall -f csvtopg-clean
+
+Auto-ordering imports
+=====================
+
+To reorder import in all source files::
+
+    isort --recursive src tests
 
 Credits
 =======

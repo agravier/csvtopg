@@ -1,6 +1,7 @@
 import logging
-from dataclasses import dataclass, asdict
-from typing import Dict, Optional, List
+import os.path
+from dataclasses import asdict, dataclass
+from typing import Dict, List, Optional
 
 import dacite
 
@@ -14,7 +15,8 @@ class ConfigurationError(Exception):
 @dataclass
 class Config:
     conn_uri: str
-    file_path: str
+    table_name: str
+    input_file: str
     use_uvloop: Optional[bool]
     log_level: str
 
@@ -27,11 +29,13 @@ class Config:
                 'use_uvloop configuration flag.')
         if not self.conn_uri:
             issues.append('Missing database connection string.')
-        if not self.file_path:
+        if not self.input_file:
             issues.append('Missing input CSV file path.')
         if self.log_level is not None and self.log_level not in {
                 'CRITICAL', 'ERROR', 'WARNING', 'INFO', 'DEBUG', 'NOTSET'}:
             issues.append(f'Unknown log level: "{self.log_level}".')
+        if not os.path.exists(self.input_file):
+            issues.append(f'"{self.input_file}" does not exist.')
         return issues
 
     @classmethod
@@ -62,7 +66,7 @@ class Config:
 
 def check_uvloop():
     try:
-        import uvloop
+        import uvloop  # noqa: F401
         return True
     except ImportError:
         return False

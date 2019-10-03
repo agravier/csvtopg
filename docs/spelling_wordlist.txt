@@ -7,3 +7,10 @@ docstrings
 Changelog
 api
 rst
+cli
+config
+dict
+loglevel
+libpq
+param
+conf

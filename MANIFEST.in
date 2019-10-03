@@ -14,3 +14,4 @@ include MANIFEST.in
 include tox.ini .travis.yml
 
 global-exclude *.py[cod] __pycache__/* *.so *.dylib
+global-exclude docs/api/* docs/_rst/* docs/_build/*
