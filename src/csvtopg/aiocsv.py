@@ -65,9 +65,10 @@ class AsyncReader:
                 self.expected_num_fields = num_fields
             else:
                 while num_fields != self.expected_num_fields:
-                    message = (f'Incorrect record length at line {self.line_num} '
-                               f'(expected {self.expected_num_fields}, found '
-                               f'{num_fields})')
+                    message = (
+                        f'Incorrect record length at line {self.line_num} '
+                        f'(expected {self.expected_num_fields}, found '
+                        f'{num_fields})')
                     if self.on_wrong_length is OnError.exception:
                         raise AsyncReaderError(message)
                     elif self.on_wrong_length is OnError.skip_and_warn:

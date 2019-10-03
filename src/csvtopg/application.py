@@ -11,6 +11,7 @@ from typing import List, Optional, Tuple
 
 import aiofile
 import asyncpg
+
 from csvtopg.aiocsv import AsyncListReader
 from csvtopg.configuration import Config
 

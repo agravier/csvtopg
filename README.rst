@@ -9,7 +9,8 @@ Fast utility to transform and load a CSV file in a PostgreSQL table
 Description
 ===========
 
-A longer description of your project goes here...
+This is a small prototype of a tool to transform and load a CSV file in a
+PostgreSQL table. This is an experimental project, use it at your own risk!
 
 Architecture
 ============
@@ -55,11 +56,7 @@ We use ``tox`` to run all tests in different environments (a "text matrix").
 For this project, we use ``tox`` to ensure that tests pass in Python 3.7 and
 3.8, that the documentation is correctly generated, and to report test
 coverage. These correspond to environments declared at the top of tox.ini as
-``py37``, ``py38``, clean
-``check``
-``docs``
-``report`` in the
-``envlist``.
+``py37-*``, ``py38-*``, ``check``, ``docs`` and ``report`` in the ``envlist``.
 
 We also use the ``tox-docker`` plugin to make a real Postgres database
 available as fixture for performance tests.
@@ -100,5 +97,5 @@ To reorder import in all source files::
 Credits
 =======
 
-- The initial project structure created using `PyScaffold
+- The initial project structure was created using `PyScaffold
   <https://pyscaffold.readthedocs.io>`_ 3.2.2.

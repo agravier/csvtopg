@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-import pytest
-
 from csvtopg.application import CSVToPg
 from csvtopg.configuration import Config
 
