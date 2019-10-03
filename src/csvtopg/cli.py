@@ -132,7 +132,7 @@ def load_and_check_configuration(
     help='Database table where the data needs to be written.')
 @click.option(
     '--use_uvloop', is_flag=True, required=False,
-    hidden=UVLOOP_AVAILABLE, help='Use uvloop as event loop')
+    hidden=not UVLOOP_AVAILABLE, help='Use uvloop as event loop')
 @click.option(
     '--log_level', required=False,
     help='Console logging level: DEBUG, INFO (default), WARNING, etc.')
